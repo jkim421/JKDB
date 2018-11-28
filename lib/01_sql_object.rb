@@ -1,5 +1,6 @@
 require_relative 'db_connection'
 require 'active_support/inflector'
+require 'byebug'
 # NB: the attr_accessor we wrote in phase 0 is NOT used in the rest
 # of this project. It was only a warm up.
 
@@ -21,6 +22,7 @@ class SQLObject
 
   def self.finalize!
     self.columns.each do |col|
+      debugger
       define_method(col) { self.attributes[col] }
       define_method("#{col}=") do |val|
         self.attributes[col] = val
@@ -47,8 +49,8 @@ class SQLObject
     self.parse_all(records)
   end
 
-  def self.parse_all(results)
-    results.map { |result| self.new(result) }
+  def self.parse_all(records)
+    records.map { |record| self.new(record) }
   end
 
   def self.find(id)
@@ -64,10 +66,10 @@ class SQLObject
   end
 
   def initialize(params = {})
-    params.each do |key, val|
-      key_sym = key.to_sym
-      raise "unknown attribute '#{key_sym}'" unless self.class.columns.include?(key_sym)
-      self.send("#{key_sym}=", val)
+    params.each do |col, val|
+      col_sym = col.to_sym
+      raise "unknown attribute '#{col_sym}'" unless self.class.columns.include?(col_sym)
+      self.send("#{col_sym}=", val)
     end
   end
 
