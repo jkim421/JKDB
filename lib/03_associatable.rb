@@ -35,7 +35,7 @@ end
 class HasManyOptions < AssocOptions
   def initialize(other_class_name, self_class_name, options = {})
     has_many = {
-      foreign_key: "#{self_class_name.underscore}_id".to_sym,
+      foreign_key: "#{self_class_name.underscore.singularize}_id".to_sym,
       primary_key: :id,
       class_name: other_class_name.to_s.singularize.camelcase
     }
@@ -48,22 +48,26 @@ end
 
 module Associatable
   def belongs_to(other_class_name, options = {})
-    options = BelongsToOptions.new(other_class_name, options)
+    assoc = BelongsToOptions.new(other_class_name, options)
 
     define_method(other_class_name) do
-      fkey = self.send(options.foreign_key)
-      model = options.model_class
-      debugger
-      model.where(options.primary_key => fkey).first
+      fkey = self.send(assoc.foreign_key)
+      model = assoc.model_class
+      model.where(assoc.primary_key => fkey).first
     end
   end
 
-  def has_many(name, options = {})
-    # ...
+  def has_many(other_class_name, options = {})
+    assoc = HasManyOptions.new(other_class_name, self.table_name, options)
+    define_method(other_class_name) do
+      fkey = self.send(assoc.primary_key)
+      model = assoc.model_class
+      model.where(assoc.foreign_key => fkey)
+    end
   end
 
   def assoc_options
-    # Wait to implement this in Phase IVa. Modify `belongs_to`, too.
+    @assoc_options ||= {}
   end
 end
 
