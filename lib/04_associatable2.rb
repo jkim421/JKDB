@@ -5,7 +5,6 @@ module Associatable
     through_options = @assoc_options[through_name]
     define_method(name) do
       source_options = through_options.model_class.assoc_options[source_name]
-      debugger
       record = DBConnection.execute(<<-SQL, self.send(through_options.foreign_key))
         SELECT
           #{source_options.table_name}.*
