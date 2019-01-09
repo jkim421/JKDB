@@ -1,7 +1,7 @@
 require 'sqlite3'
 
 PRINT_QUERIES = ENV['PRINT_QUERIES'] == 'true'
-ROOT_FOLDER = File.join(File.dirname(__FILE__), '..')
+ROOT_FOLDER = File.join(File.dirname(__FILE__), '../')
 UFC_SQL_FILE = File.join(ROOT_FOLDER, 'ufc.sql')
 UFC_DB_FILE = File.join(ROOT_FOLDER, 'ufc.db')
 
