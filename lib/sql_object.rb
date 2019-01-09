@@ -52,7 +52,8 @@ class SQLObject
   end
 
   def self.parse_all(records)
-    records.map { |record| self.new(record) }
+    parsed = records.map { |record| self.new(record) }
+    parsed.length == 1 ? parsed.first : parsed
   end
 
   def self.find(id)
@@ -64,7 +65,7 @@ class SQLObject
       WHERE
         id = ?
     SQL
-    self.parse_all(record).first
+    self.parse_all(record)
   end
 
   def initialize(params = {})
@@ -80,7 +81,7 @@ class SQLObject
   end
 
   def attribute_values
-    self.class.columns.map { |col| self.attributes[col] }
+    self.class.columns.map { |col| self.send(col) }
   end
 
   def insert

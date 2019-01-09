@@ -1,34 +1,38 @@
+DROP TABLE IF EXISTS fighters;
+DROP TABLE IF EXISTS divisions;
+DROP TABLE IF EXISTS promotions;
+
 CREATE TABLE fighters (
   id INTEGER PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   ranking INTEGER,
   division_id INTEGER,
 
-  FOREIGN KEY(division_id) REFERENCES division(id)
+  FOREIGN KEY(division_id) REFERENCES divisions(id)
 );
 
-CREATE TABLE division (
+CREATE TABLE divisions (
   id INTEGER PRIMARY KEY,
-  name VARCHAR(255) NOT NULL
+  name VARCHAR(255) NOT NULL,
   weight_limit INTEGER NOT NULL,
   promotion_id INTEGER,
 
-  FOREIGN KEY(promotion_id) REFERENCES promotion(id)
+  FOREIGN KEY(promotion_id) REFERENCES promotions(id)
 );
 
-CREATE TABLE promotion (
+CREATE TABLE promotions (
   id INTEGER PRIMARY KEY,
-  name VARCHAR(255) NOT NULL
+  name VARCHAR(255) NOT NULL,
   country VARCHAR(255) NOT NULL
 );
 
 INSERT INTO
-  promotion (id, name, country)
+  promotions (id, name, country)
 VALUES
   (1, "Ultimate Fighting Championship", "USA");
 
 INSERT INTO
-  division (id, name, weight_limit, promotion_id)
+  divisions (id, name, weight_limit, promotion_id)
 VALUES
   (1, "Flyweight", 125, 1),
   (2, "Bantamweight", 135, 1),

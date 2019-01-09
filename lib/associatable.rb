@@ -1,3 +1,6 @@
+require_relative 'belongs_to_options'
+require_relative 'has_many_options'
+
 module Associatable
   def belongs_to(other_class_name, options = {})
     self.assoc_options[other_class_name] = BelongsToOptions.new(other_class_name, options)
@@ -5,7 +8,7 @@ module Associatable
       assoc = self.class.assoc_options[other_class_name]
       fkey = self.send(assoc.foreign_key)
       model = assoc.model_class
-      model.where(assoc.primary_key => fkey).first
+      model.where(assoc.primary_key => fkey)
     end
   end
 
@@ -37,7 +40,7 @@ module Associatable
         WHERE
           #{through_options.table_name}.#{through_options.primary_key} = ?
       SQL
-      return source_options.model_class.parse_all(record).first
+      return source_options.model_class.parse_all(record)
     end
   end
 end
