@@ -1,51 +1,3 @@
-require_relative 'searchable'
-require 'active_support/inflector'
-require 'byebug'
-
-class AssocOptions
-  attr_accessor(
-    :foreign_key,
-    :class_name,
-    :primary_key
-  )
-
-  def model_class
-    @class_name.constantize
-  end
-
-  def table_name
-    self.model_class.table_name
-  end
-end
-
-class BelongsToOptions < AssocOptions
-  def initialize(other_class_name, options = {})
-    belongs = {
-      foreign_key: "#{other_class_name}_id".to_sym,
-      primary_key: :id,
-      class_name: other_class_name.to_s.singularize.camelcase
-    }
-
-    belongs.keys.each do |assoc|
-      self.send("#{assoc}=", options[assoc] || belongs[assoc])
-    end
-  end
-end
-
-class HasManyOptions < AssocOptions
-  def initialize(other_class_name, self_class_name, options = {})
-    has_many = {
-      foreign_key: "#{self_class_name.underscore.singularize}_id".to_sym,
-      primary_key: :id,
-      class_name: other_class_name.to_s.singularize.camelcase
-    }
-
-    has_many.keys.each do |assoc|
-      self.send("#{assoc}=", options[assoc] || has_many[assoc])
-    end
-  end
-end
-
 module Associatable
   def belongs_to(other_class_name, options = {})
     self.assoc_options[other_class_name] = BelongsToOptions.new(other_class_name, options)
@@ -69,5 +21,23 @@ module Associatable
 
   def assoc_options
     @assoc_options ||= {}
+  end
+
+  def has_one_through(name, through_name, source_name)
+    through_options = @assoc_options[through_name]
+    define_method(name) do
+      source_options = through_options.model_class.assoc_options[source_name]
+      record = DBConnection.execute(<<-SQL, self.send(through_options.foreign_key))
+        SELECT
+          #{source_options.table_name}.*
+        FROM
+          #{through_options.table_name}
+        JOIN
+          #{source_options.table_name} ON #{through_options.table_name}.#{source_options.foreign_key} = #{source_options.table_name}.#{source_options.primary_key}
+        WHERE
+          #{through_options.table_name}.#{through_options.primary_key} = ?
+      SQL
+      return source_options.model_class.parse_all(record).first
+    end
   end
 end

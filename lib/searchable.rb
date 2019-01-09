@@ -4,6 +4,7 @@ module Searchable
   def where(params)
     cols = params.keys.map { |col| "#{col} = ?" }.join(" AND ")
     vals = params.values
+    
     records = DBConnection.execute(<<-SQL, *vals)
       SELECT
         *

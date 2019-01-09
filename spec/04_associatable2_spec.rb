@@ -1,4 +1,7 @@
-require 'associatable2'
+require 'associatable'
+require 'assoc_options'
+require 'belongs_to_options'
+require 'has_many_options'
 require 'sql_object'
 
 describe 'Associatable' do
