@@ -2,8 +2,8 @@ require 'sqlite3'
 
 PRINT_QUERIES = ENV['PRINT_QUERIES'] == 'true'
 ROOT_FOLDER = File.join(File.dirname(__FILE__), '../')
-UFC_SQL_FILE = File.join(ROOT_FOLDER, 'ufc.sql')
-UFC_DB_FILE = File.join(ROOT_FOLDER, 'ufc.db')
+MMA_SQL_FILE = File.join(ROOT_FOLDER, 'mma.sql')
+MMA_DB_FILE = File.join(ROOT_FOLDER, 'mma.db')
 
 class DBConnection
   def self.open(db_file_name)
@@ -16,16 +16,16 @@ class DBConnection
 
   def self.reset_demo
     commands = [
-      "rm '#{UFC_DB_FILE}'",
-      "sqlite3 '#{UFC_DB_FILE}' < '#{UFC_SQL_FILE}'"
+      "rm '#{MMA_DB_FILE}'",
+      "sqlite3 '#{MMA_DB_FILE}' < '#{MMA_SQL_FILE}'"
     ]
 
     commands.each { |command| `#{command}` }
-    DBConnection.open(UFC_DB_FILE)
+    DBConnection.open(MMA_DB_FILE)
   end
 
   def self.instance
-    reset if @db.nil?
+    reset_demo if @db.nil?
 
     @db
   end

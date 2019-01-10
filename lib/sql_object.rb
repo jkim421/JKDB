@@ -2,7 +2,6 @@ require_relative 'db_connection'
 require_relative 'searchable'
 require_relative 'associatable'
 require 'active_support/inflector'
-require 'byebug'
 
 class SQLObject
   extend Searchable
@@ -71,7 +70,10 @@ class SQLObject
   def initialize(params = {})
     params.each do |col, val|
       col_sym = col.to_sym
-      raise "unknown attribute '#{col_sym}'" unless self.class.columns.include?(col_sym)
+
+      raise "unknown attribute '#{col_sym}'" unless
+        self.class.columns.include?(col_sym)
+
       self.send("#{col_sym}=", val)
     end
   end
@@ -92,7 +94,7 @@ class SQLObject
     cols.length.times { |n| marks << "?" }
     marks = marks.join(", ")
 
-    record = DBConnection.execute(<<-SQL, *self.attribute_values.drop(1))
+    row = DBConnection.execute(<<-SQL, *self.attribute_values.drop(1))
       INSERT INTO
         #{self.class.table_name} (#{cols_str})
       VALUES

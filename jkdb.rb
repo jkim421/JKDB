@@ -6,13 +6,15 @@ require_relative 'lib/assoc_options'
 require_relative 'lib/belongs_to_options'
 require_relative 'lib/has_many_options'
 
-DBConnection.open('ufc.db')
+DBConnection.open('mma.db')
 
 class Fighter < SQLObject
   attr_accessor :id, :name, :ranking, :division_id
 
   belongs_to :division
   has_one_through :promotion, :division, :promotion
+
+  finalize!
 end
 
 class Division < SQLObject
@@ -20,10 +22,14 @@ class Division < SQLObject
 
   has_many :fighters
   belongs_to :promotion
+
+  finalize!
 end
 
 class Promotion < SQLObject
   attr_accessor :id, :name, :country
 
   has_many :divisions
+
+  finalize!
 end
