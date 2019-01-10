@@ -105,11 +105,11 @@ end
 * `DBConnection.instance`
 
 ### Tables
-* `#columns`
-* `#all`
-* `#find(id)`
-* `#where(search_params)`
-* `#table_name=`
+* `::columns`
+* `::all`
+* `::find(id)`
+* `::where(search_params)`
+* `::table_name=`
 
 ### Records
 * `#attributes`
